@@ -13,9 +13,15 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
   // Add command
   editor.Commands.add(commandName, {
     run() {
-      console.log(editor.getConfig());
+      // console.log(editor.getConfig());
+      var randomUUID = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+      for (var i = 0; i < 5; i++)
+        randomUUID += possible.charAt(Math.floor(Math.random() * possible.length));
+
       var exportConfig = {
-        "uuid": "testuuid",
+        "uuid": randomUUID,
         "mobileOS": editor.getDevice(),
         "customHTMLFiles": [
           {
@@ -37,11 +43,15 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
         "callBackApi": "http://localhost/callBackApi"
       }
 
-      console.log(exportConfig);
+      console.log("export uuid: " + exportConfig.uuid);
 
+      // remote test url: http://10.109.252.77:8081/api/v1/android/build-installer
+      // local  test url: http://localhost:8081/api/v1/android/build-installer
+      // defualt url: /mobile/export
       $.ajax({
         type: 'POST',
         url: '/mobile/export',
+        // url: 'http://10.109.252.77:8081/api/v1/android/build-installer',
         data: JSON.stringify(exportConfig),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
@@ -50,18 +60,6 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
           alert(data.status);
         }
       })
-
-      // $.ajax({
-      //   type: 'POST',
-      //   url: 'http://localhost:8081/api/v1/android/build-installer',
-      //   data: JSON.stringify(exportConfig),
-      //   contentType: "application/json; charset=utf-8",
-      //   dataType: "json",
-      //   success: function (data) { alert(data.status); },
-      //   failure: function (errMsg) {
-      //     alert(errMsg);
-      //   }
-      // })
     }
   });
 
