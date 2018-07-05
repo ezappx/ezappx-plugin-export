@@ -13,11 +13,9 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
   // Add command
   editor.Commands.add(commandName, {
     run() {
-      console.log(editor.getDevice())
-      console.log(editor.getHtml());
-      console.log(editor.getCss());
+      console.log(editor.getConfig());
       var exportConfig = {
-        "uuid": "test uuid",
+        "uuid": "testuuid",
         "mobileOS": editor.getDevice(),
         "customHTMLFiles": [
           {
@@ -33,23 +31,37 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
         ],
         "dependentFiles":
         {
-          "css": ["weui.min.css"],
-          "js": ["jquery-3.3.1.min.js"]
+          "css": editor.getConfig().canvas.styles,
+          "js": editor.getConfig().canvas.scripts
         },
         "callBackApi": "http://localhost/callBackApi"
       }
 
+      console.log(exportConfig);
+
       $.ajax({
         type: 'POST',
-        url: '/mobile/build',
+        url: '/mobile/export',
         data: JSON.stringify(exportConfig),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: function (data) { alert(data); },
+        success: function (data) { alert(data.status); },
         failure: function (errMsg) {
-          alert(errMsg);
+          alert(data.status);
         }
       })
+
+      // $.ajax({
+      //   type: 'POST',
+      //   url: 'http://localhost:8081/api/v1/android/build-installer',
+      //   data: JSON.stringify(exportConfig),
+      //   contentType: "application/json; charset=utf-8",
+      //   dataType: "json",
+      //   success: function (data) { alert(data.status); },
+      //   failure: function (errMsg) {
+      //     alert(errMsg);
+      //   }
+      // })
     }
   });
 
