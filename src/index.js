@@ -13,53 +13,115 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
   // Add command
   editor.Commands.add(commandName, {
     run() {
-      // console.log(editor.getConfig());
-      var randomUUID = "";
-      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let defaults = {
+        preHtmlBody: '<!doctype html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="./css/style.css">',
+        preHtml: '</head><body>',
+        postHtml: '</body><html>',
+        preCss: '<link href="',
+        postCss: '" rel="stylesheet">',
+        preJs: '<script src="',
+        postJs: '"></script>'
+      };
 
-      for (var i = 0; i < 5; i++)
-        randomUUID += possible.charAt(Math.floor(Math.random() * possible.length));
+      var username = opts.username
+      var projectName = opts.projectName
+      var mobileOS = editor.getDevice()
+      var htmlContent = defaults.preHtmlBody
+      var uploadApi = '/export/upload/projectFile'
+      var buildApi = '/export/sendBuildRequest'
+      var binaryFiles = [] // binary data id
 
-      var exportConfig = {
-        "uuid": randomUUID,
-        "mobileOS": editor.getDevice(),
-        "customHTMLFiles": [
-          {
-            "filename": "index.html",
-            "content": editor.getHtml()
-          }
-        ],
-        "customCSSFiles": [
-          {
-            "filename": "css.css",
-            "content": editor.getCss()
-          }
-        ],
-        "dependentFiles":
-        {
-          "css": editor.getConfig().canvas.styles,
-          "js": editor.getConfig().canvas.scripts
-        },
-        "callBackApi": "http://localhost/callBackApi"
+      // create html file
+      $.each(editor.getConfig().canvas.styles, function (n, value) {
+        htmlContent = htmlContent + defaults.preCss + value + defaults.postCss
+      })
+      $.each(editor.getConfig().canvas.scripts, function (n, value) {
+        htmlContent = htmlContent + defaults.preJs + value + defaults.postJs
+      })
+      htmlContent = htmlContent + defaults.preHtml + editor.getHtml() + defaults.postHtml
+      var htmlFile = {
+        'username': username,
+        'projectName': projectName,
+        'mobileOS': mobileOS,
+        'filePath': './index.html',
+        'content': htmlContent
       }
-
-      console.log("export uuid: " + exportConfig.uuid);
-
-      // remote test url: http://10.109.252.77:8081/api/v1/android/build-installer
-      // local  test url: http://localhost:8081/api/v1/android/build-installer
-      // defualt url: /mobile/export
       $.ajax({
         type: 'POST',
-        url: '/mobile/export',
-        // url: 'http://10.109.252.77:8081/api/v1/android/build-installer',
-        data: JSON.stringify(exportConfig),
+        url: uploadApi,
+        data: JSON.stringify(htmlFile),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
-        success: function (data) { alert(data.status); },
+        async: false,
+        success: function (res) {
+          // alert(JSON.stringify(res.status))
+          console.log(res)
+          if (res.fileId != '') {
+            binaryFiles.push(res.fileId)
+          }
+        },
         failure: function (errMsg) {
           alert(data.status);
         }
       })
+
+      // create css file
+      var cssContent = editor.getCss()
+      var cssFile = {
+        'username': username,
+        'projectName': projectName,
+        'mobileOS': mobileOS,
+        'filePath': './css/style.css',
+        'content': cssContent
+      }
+      $.ajax({
+        type: 'POST',
+        url: uploadApi,
+        data: JSON.stringify(cssFile),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        async: false,
+        success: function (res) {
+          console.log(res)
+          if (res.fileId != '') {
+            binaryFiles.push(res.fileId)
+          }
+        },
+        failure: function (errMsg) {
+          alert(data.status);
+        }
+      })
+
+      // send build app reqeust
+      var now = new Date($.now())
+      var mobileAppProject = {
+        'username': username,
+        'projectName': projectName,
+        'createdAt': now,
+        'updatedAt': now,
+        'mobileOS': mobileOS,
+        'binaryFiles': binaryFiles,
+        'cordovaPlugins': [],
+      }
+
+      console.log(mobileAppProject)
+      console.log(JSON.stringify(mobileAppProject))
+
+      $.ajax({
+        type: 'POST',
+        url: buildApi,
+        data: JSON.stringify(mobileAppProject),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
+        async: true,
+        success: function (res) {
+          alert(res.status)
+        },
+        failure: function (errMsg) {
+          alert(data.status);
+        }
+      })
+
     }
   });
 
