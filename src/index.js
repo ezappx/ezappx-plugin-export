@@ -27,8 +27,8 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
       var projectName = opts.projectName
       var mobileOS = editor.getDevice()
       var htmlContent = defaults.preHtmlBody
-      var uploadApi = '/export/upload/projectFile'
-      var buildApi = '/export/sendBuildRequest'
+      var uploadApi = opts.uploadApi
+      var exportApi = opts.exportApi
       var binaryFiles = [] // binary data id
 
       // create html file
@@ -109,13 +109,17 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
 
       $.ajax({
         type: 'POST',
-        url: buildApi,
+        url: exportApi,
         data: JSON.stringify(mobileAppProject),
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         async: true,
         success: function (res) {
-          alert(res.status)
+          console.log(res)
+          if (res.downloadUrl != '') {
+            window.location.href = res.downloadUrl
+            alert(res.status)
+          }
         },
         failure: function (errMsg) {
           alert(data.status);
