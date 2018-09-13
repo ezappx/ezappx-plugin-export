@@ -7,7 +7,7 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
   let btnExp = document.createElement("BUTTON");
   let commandName = 'ezapp-export';
 
-  btnExp.innerHTML = '导出';
+  btnExp.innerHTML = '导出应用安装包';
   btnExp.className = pfx + 'btn-prim';
 
   // Add command
@@ -46,6 +46,7 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
         'filePath': './index.html',
         'content': htmlContent
       }
+
       $.ajax({
         type: 'POST',
         url: uploadApi,
@@ -53,6 +54,11 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         async: false,
+        beforeSend: function () {
+          console.log("show waiting dialog");
+          $('#loading').modal("show");
+          $('#loading-title').text("导出HTML资源···")
+        },
         success: function (res) {
           // alert(JSON.stringify(res.status))
           console.log(res)
@@ -61,7 +67,12 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
           }
         },
         failure: function (errMsg) {
-          alert(data.status);
+          $('#loading-title').text(data.status)
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          if (xhr.status == 404) {
+            $('#loading-title').text(thrownError)
+          }
         }
       })
 
@@ -81,6 +92,9 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         async: false,
+        beforeSend: function () {
+          $('#loading-title').text("导出CSS资源···")
+        },
         success: function (res) {
           console.log(res)
           if (res.fileId != '') {
@@ -88,7 +102,12 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
           }
         },
         failure: function (errMsg) {
-          alert(data.status);
+          $('#loading-title').text(data.status)
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          if (xhr.status == 404) {
+            $('#loading-title').text(thrownError)
+          }
         }
       })
 
@@ -114,18 +133,27 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
         contentType: "application/json; charset=utf-8",
         dataType: "json",
         async: true,
+        beforeSend: function () {
+          $('#loading-title').text("编译打包应用···")
+        },
         success: function (res) {
           console.log(res)
-          if (res.downloadUrl != '') {
+          if(res.downloadUrl == null || res.downloadUrl == '' || res.downloadUrl.endsWith("null")) {
+            $('#loading-title').text("编译应用失败");
+          }else {
             window.location.href = res.downloadUrl
-            alert(res.status)
+            $('#loading-title').text(res.status)
           }
         },
         failure: function (errMsg) {
-          alert(data.status);
+          $('#loading-title').text(data.status)
+        },
+        error: function (xhr, ajaxOptions, thrownError) {
+          if (xhr.status == 404) {
+            $('#loading-title').text(thrownError)
+          }
         }
       })
-
     }
   });
 
