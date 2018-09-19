@@ -40,7 +40,10 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
       console.log("show waiting dialog");
 
       let defaults = {
-        preHtmlBody: '<!doctype html><html lang="en"><head><meta charset="utf-8"><link rel="stylesheet" href="./css/style.css">',
+        preHtmlBody: `<!doctype html><html lang="en"><head>
+                      <meta charset="utf-8">
+                      <meta name='viewport' content='initial-scale=1.0, user-scalable=no'/>
+                      <link rel="stylesheet" href="./css/style.css">`,
         preHtml: '</head><body>',
         postHtml: '</body><html>',
         preCss: '<link href="',
