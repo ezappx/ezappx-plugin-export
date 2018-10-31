@@ -1,6 +1,6 @@
 import grapesjs from 'grapesjs';
 
-export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) => {
+export default grapesjs.plugins.add('ezappx-plugin-export', (editor, opts = {}) => {
   let config = editor.getConfig();
   let pfx = config.stylePrefix;
   let btnExp = document.createElement("BUTTON");
@@ -9,41 +9,47 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
   btnExp.innerHTML = '导出应用安装包';
   btnExp.className = pfx + 'btn-prim';
 
-  // Add command
   editor.Commands.add(commandName, {
     run() {
       var tipHtml = `<div class="modal fade" id="loading" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                  <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                      <div class="modal-header">
-                        <h5 class="modal-title" id="loading-title"></h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                          <span aria-hidden="true">&times;</span>
-                        </button>
-                      </div>
-                      <div class="modal-body">
-                        <div class="progress">
-                          <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100"
-                            aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="loading-title"></h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <div class="progress">
+                              <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" aria-valuenow="100"
+                                aria-valuemin="0" aria-valuemax="100" style="width: 100%"></div>
+                            </div>
+                          </div>
+                          <!-- <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary">Save changes</button>
+                              </div> -->
                         </div>
                       </div>
-                      <!-- <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                            <button type="button" class="btn btn-primary">Save changes</button>
-                          </div> -->
-                    </div>
-                  </div>
-                </div>`
+                      </div>`
       console.log(opts)
       $("#" + opts.tipDivId).html(tipHtml);
       $("#loading").modal();
       console.log("show waiting dialog");
 
       let defaults = {
-        preHtmlBody: `<!doctype html><html lang="en"><head>
-                      <meta charset="utf-8">
-                      <meta name='viewport' content='initial-scale=1.0, user-scalable=no'/>
-                      <link rel="stylesheet" href="./css/style.css">`,
+        preHtmlBody: `<!doctype html>
+                        <html lang="en">
+                        <head>
+                          <meta charset="utf-8">
+                          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui, viewport-fit=cover">
+                          <meta name="apple-mobile-web-app-capable" content="yes">
+                          <!-- Color theme for statusbar -->
+                          <meta name="theme-color" content="#2196f3">
+
+                          <link rel="stylesheet" href="./css/style.css">
+                      `,
         preHtml: '</head><body>',
         postHtml: '</body><html>',
         preCss: '<link href="',
@@ -161,7 +167,7 @@ export default grapesjs.plugins.add('ezapp-plugin-export', (editor, opts = {}) =
         dataType: "json",
         async: true,
         beforeSend: function () {
-          $('#loading-title').text("编译打包应用···")
+          $('#loading-title').text("编译应用···")
         },
         success: function (res) {
           console.log(res)
