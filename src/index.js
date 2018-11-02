@@ -49,6 +49,7 @@ export default grapesjs.plugins.add('ezappx-plugin-export', (editor, opts = {}) 
                           <meta name="theme-color" content="#2196f3">
 
                           <link rel="stylesheet" href="./css/style.css">
+                          <script type="text/javascript" src="cordova.js"></script>
                       `,
         preHtml: '</head><body>',
         postHtml: '</body><html>',

@@ -1,6 +1,6 @@
 {
   "name": "ezappx-plugin-export",
-  "version": "0.0.44",
+  "version": "0.0.46",
   "description": "GrapesJS Plugin Boilerplate",
   "main": "dist/ezappx-plugin-export.min.js",
   "scripts": {
