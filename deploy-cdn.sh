@@ -1,5 +1,3 @@
-#!/bin/bash
-
 needBuild=false;
 
 while getopts 'b' opt;
@@ -19,6 +17,6 @@ then
     npm run build
 fi
 
-echo "copy dist/ezappx-plugin-export.min.js to /E/JavaProjects/Ezappx/EzappxDesigner/src/main/resources/static/js"
-cp dist/ezappx-plugin-export.min.js /E/JavaProjects/Ezappx/EzappxDesigner/src/main/resources/static/js
+echo "deploy dist/ezappx-plugin-export.min.js to cdn"
+scp dist/ezappx-plugin-export.min.js ing@www.ezappx.com:~/cdn/js
 echo "done"

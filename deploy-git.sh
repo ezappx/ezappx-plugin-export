@@ -1,9 +1,3 @@
-#!/usr/bin/env bash
-
-# build plugin
-echo "compile ezappx-plugin-export..."
-npm run build
-
 # deploy to git server
 echo "deploy to git server..."
 msg="update plugin at `date`"
